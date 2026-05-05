@@ -20,7 +20,6 @@ npm-debug.log
 /public/hot
 /public/storage
 
-docker
 Dockerfile
 .dockerignore
 
