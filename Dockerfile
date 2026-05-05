@@ -1,64 +1,34 @@
-FROM php:8.3-fpm-alpine
+FROM serversideup/php:8.3-fpm-nginx
 
-# Install system dependencies
-RUN apk add --no-cache \
-    nginx \
-    nodejs \
-    npm \
-    git \
-    curl \
-    zip \
-    unzip \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    oniguruma-dev \
-    libxml2-dev \
-    mysql-client \
-    supervisor
+# Switch to root to install packages
+USER root
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
-        opcache
-
-# Set PHP memory limit high for composer
-RUN echo "memory_limit=-1" > /usr/local/etc/php/conf.d/memory.ini
-
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 
-# Copy everything
-COPY . .
+# Copy all files
+COPY --chown=www-data:www-data . .
 
 # Install PHP dependencies
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
-    --prefer-dist \
-    --ignore-platform-reqs
+    --prefer-dist
 
-# Install Node dependencies and build assets
+# Build frontend
 RUN npm ci && npm run build && rm -rf node_modules
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Nginx config
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-
-# Startup script
+# Copy startup script
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
 

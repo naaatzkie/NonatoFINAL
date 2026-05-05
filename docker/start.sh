@@ -9,7 +9,7 @@ if [ -z "$APP_KEY" ]; then
 fi
 
 # Run migrations
-php artisan migrate --force
+php artisan migrate --force || echo "Migration failed, continuing..."
 
 # Cache for production
 php artisan config:cache
@@ -19,8 +19,5 @@ php artisan view:cache
 # Storage symlink
 php artisan storage:link || true
 
-# Start PHP-FPM in background
-php-fpm -D
-
-# Start Nginx in foreground
-nginx -g "daemon off;"
+# Hand off to the base image's entrypoint (starts php-fpm + nginx)
+exec /init
