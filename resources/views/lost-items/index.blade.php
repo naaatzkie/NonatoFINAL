@@ -1,110 +1,133 @@
 <x-app-layout>
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Lost Items</h1>
-            <p class="text-sm text-gray-500 mt-1">Recently posted missing items — recognise something? Contact the owner.</p>
+{{-- Hero --}}
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#1d4ed8 100%);padding:60px 0 80px">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8">
+            <div>
+                <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:6px 14px;margin-bottom:20px">
+                    <svg width="14" height="14" fill="none" stroke="#fca5a5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                    <span style="color:#fca5a5;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase">Missing Items</span>
+                </div>
+                <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:900;color:white;line-height:1.1;letter-spacing:-0.02em">Lost Something?<br><span style="color:#93c5fd">Let's Find It Together.</span></h1>
+                <p style="color:#bfdbfe;margin-top:16px;font-size:15px;max-width:420px;line-height:1.7">Browse recently posted missing items. Recognise something? Reach out to the owner and help reunite them.</p>
+            </div>
+            <a href="{{ route('lost-items.create') }}"
+               style="display:inline-flex;align-items:center;gap:10px;background:white;color:#1d4ed8;font-weight:800;font-size:14px;padding:14px 24px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.25);white-space:nowrap;text-decoration:none;transition:transform 0.2s"
+               onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+                Post Lost Item
+            </a>
         </div>
-        <a href="{{ route('lost-items.create') }}"
-           class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition shrink-0">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
-            Post Lost Item
-        </a>
     </div>
+</div>
+
+{{-- Wave --}}
+<div style="background:linear-gradient(135deg,#0f172a,#1d4ed8);line-height:0;margin-top:-1px">
+    <svg viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:50px">
+        <path d="M0 50 C480 0 960 0 1440 50 L1440 50 L0 50 Z" fill="#f8faff"/>
+    </svg>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top:40px;padding-bottom:60px">
 
     @if(session('success'))
-        <div class="mb-5 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm font-medium">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <div style="display:flex;align-items:center;gap:12px;background:#f0fdf4;border:1px solid #86efac;color:#166534;padding:14px 18px;border-radius:14px;font-size:14px;font-weight:600;margin-bottom:24px">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
             {{ session('success') }}
         </div>
     @endif
 
-    {{-- Filters --}}
-    <form method="GET" action="{{ route('lost-items.index') }}"
-          class="bg-white border border-gray-200 rounded-2xl p-4 mb-6 flex flex-wrap gap-3 items-end">
-        <div class="flex-1 min-w-[180px]">
-            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Search</label>
-            <div class="relative">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="6"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, color, brand, location…"
-                       class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
+    {{-- Filter Bar --}}
+    <div style="background:white;border-radius:20px;padding:24px;margin-bottom:32px;box-shadow:0 4px 24px rgba(59,130,246,0.10)">
+        <p style="font-size:13px;font-weight:700;color:#374151;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.05em">Filter Items</p>
+        <form method="GET" action="{{ route('lost-items.index') }}" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
+            <div style="flex:1;min-width:180px">
+                <label style="display:block;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Search</label>
+                <div style="position:relative">
+                    <svg width="16" height="16" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="6"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, color, brand, location…"
+                           style="width:100%;padding:10px 12px 10px 38px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;background:#f9fafb;outline:none;box-sizing:border-box"
+                           onfocus="this.style.borderColor='#3b82f6';this.style.background='white'" onblur="this.style.borderColor='#e5e7eb';this.style.background='#f9fafb'">
+                </div>
             </div>
-        </div>
-        <div class="min-w-[150px]">
-            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Category</label>
-            <select name="category" class="w-full border border-gray-200 rounded-xl text-sm py-2 px-3 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">All Categories</option>
-                @foreach(['Electronics','Clothing','Accessories','Documents','Bags','Keys','Wallet','Jewelry','Sports','Other'] as $cat)
-                    <option value="{{ $cat }}" @selected(request('category')===$cat)>{{ $cat }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="min-w-[130px]">
-            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Status</label>
-            <select name="status" class="w-full border border-gray-200 rounded-xl text-sm py-2 px-3 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">All</option>
-                <option value="missing" @selected(request('status')==='missing')>Missing</option>
-                <option value="found"   @selected(request('status')==='found')>Found</option>
-            </select>
-        </div>
-        <div class="flex gap-2 items-center">
-            <button type="submit" class="bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold px-5 py-2 rounded-xl transition">Filter</button>
-            @if(request()->hasAny(['search','category','status']))
-                <a href="{{ route('lost-items.index') }}" class="text-sm text-gray-400 hover:text-gray-600">Clear</a>
-            @endif
-        </div>
-    </form>
+            <div style="min-width:150px">
+                <label style="display:block;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Category</label>
+                <select name="category" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;background:#f9fafb;outline:none">
+                    <option value="">All Categories</option>
+                    @foreach(['Electronics','Clothing','Accessories','Documents','Bags','Keys','Wallet','Jewelry','Sports','Other'] as $cat)
+                        <option value="{{ $cat }}" @selected(request('category')===$cat)>{{ $cat }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div style="min-width:130px">
+                <label style="display:block;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Status</label>
+                <select name="status" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;background:#f9fafb;outline:none">
+                    <option value="">All</option>
+                    <option value="missing" @selected(request('status')==='missing')>Missing</option>
+                    <option value="found"   @selected(request('status')==='found')>Found</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+                <button type="submit" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:white;font-size:14px;font-weight:700;padding:10px 24px;border-radius:12px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(59,130,246,0.4)">
+                    Search
+                </button>
+                @if(request()->hasAny(['search','category','status']))
+                    <a href="{{ route('lost-items.index') }}" style="font-size:13px;color:#9ca3af;text-decoration:none;padding:0 8px">Clear</a>
+                @endif
+            </div>
+        </form>
+    </div>
 
     @if(!$items->isEmpty())
-        <p class="text-sm text-gray-500 mb-4"><span class="font-semibold text-gray-700">{{ $items->total() }}</span> item{{ $items->total()!==1?'s':'' }} listed</p>
+        <p style="font-size:14px;color:#6b7280;margin-bottom:20px">
+            Showing <strong style="color:#111827">{{ $items->total() }}</strong> item{{ $items->total()!==1?'s':'' }}
+        </p>
     @endif
 
     @if($items->isEmpty())
-        <div class="bg-white border border-gray-200 rounded-2xl py-20 text-center">
-            <div class="bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4" style="width:56px;height:56px">
-                <svg width="28" height="28" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+        <div style="background:white;border-radius:24px;padding:80px 24px;text-align:center;box-shadow:0 4px 24px rgba(59,130,246,0.08)">
+            <div style="width:72px;height:72px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+                <svg width="34" height="34" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
             </div>
-            <p class="font-semibold text-gray-700">No lost items posted yet</p>
-            <p class="text-sm text-gray-400 mt-1">Lost something? Let others know.</p>
-            <a href="{{ route('lost-items.create') }}" class="inline-flex items-center gap-1.5 mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+            <p style="font-size:18px;font-weight:800;color:#111827">No lost items posted yet</p>
+            <p style="font-size:14px;color:#9ca3af;margin-top:6px">Lost something? Let others know.</p>
+            <a href="{{ route('lost-items.create') }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:20px;font-size:14px;color:#2563eb;font-weight:600;text-decoration:none">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
                 Post a lost item
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px">
             @foreach($items as $item)
                 <a href="{{ route('lost-items.show', $item) }}"
-                   class="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
-                    <div class="relative bg-gray-50 overflow-hidden" style="height:176px">
+                   style="background:white;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;box-shadow:0 2px 12px rgba(59,130,246,0.08);border:1px solid rgba(224,234,255,0.8);transition:all 0.3s cubic-bezier(0.4,0,0.2,1)"
+                   onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(59,130,246,0.15)'"
+                   onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(59,130,246,0.08)'">
+                    <div style="position:relative;aspect-ratio:4/3;background:linear-gradient(135deg,#f0f7ff,#e8f0fe);overflow:hidden">
                         @if($item->image_path)
                             <img src="{{ Storage::url($item->image_path) }}" alt="{{ $item->item_name }}"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                 style="width:100%;height:100%;object-fit:cover">
                         @else
-                            <div class="absolute inset-0 flex flex-col items-center justify-center" style="color:#d1d5db">
-                                <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                <span style="font-size:11px;margin-top:6px">No photo</span>
+                            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                                <svg width="40" height="40" fill="none" stroke="#bfdbfe" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                <span style="font-size:11px;color:#bfdbfe;margin-top:8px;font-weight:500">No photo</span>
                             </div>
                         @endif
-                        <span class="absolute top-2 right-2 text-xs font-bold px-2.5 py-1 rounded-full
-                            {{ $item->status==='missing' ? 'bg-red-500 text-white' : 'bg-green-500 text-white' }}">
+                        <span style="position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;border:1.5px solid rgba(255,255,255,0.5);{{ $item->status==='missing' ? 'background:rgba(239,68,68,0.9);color:white' : 'background:rgba(16,185,129,0.9);color:white' }}">
                             {{ ucfirst($item->status) }}
                         </span>
                     </div>
-                    <div class="p-4 flex flex-col flex-1 gap-2">
-                        <div>
-                            <p class="text-xs font-semibold text-blue-500 uppercase tracking-wide">{{ $item->category }}</p>
-                            <h3 class="font-semibold text-gray-900 text-sm mt-0.5">{{ $item->item_name }}</h3>
-                        </div>
-                        <div class="mt-auto pt-2 border-t border-gray-100 space-y-1.5 text-xs text-gray-500">
-                            <div class="flex items-center gap-1.5">
-                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                <span class="truncate">{{ $item->last_seen_location }}</span>
+                    <div style="padding:16px 18px;display:flex;flex-direction:column;flex:1">
+                        <span style="font-size:10px;font-weight:800;color:#3b82f6;background:#eff6ff;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block">{{ $item->category }}</span>
+                        <h3 style="font-size:15px;font-weight:700;color:#111827;margin-top:8px;line-height:1.3">{{ $item->item_name }}</h3>
+                        <div style="margin-top:auto;padding-top:12px;border-top:1px solid #f3f4f6;display:flex;flex-direction:column;gap:6px">
+                            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#6b7280">
+                                <svg width="13" height="13" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $item->last_seen_location }}</span>
                             </div>
-                            <div class="flex items-center gap-1.5">
-                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#6b7280">
+                                <svg width="13" height="13" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 {{ \Carbon\Carbon::parse($item->date_lost)->format('M d, Y') }}
                             </div>
                         </div>
@@ -112,7 +135,7 @@
                 </a>
             @endforeach
         </div>
-        <div class="mt-8">{{ $items->links() }}</div>
+        <div style="margin-top:40px">{{ $items->links() }}</div>
     @endif
 </div>
 </x-app-layout>
