@@ -20,25 +20,10 @@ RUN apk add --no-cache \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd opcache
 
-# PHP memory config
-RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory.ini
-
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
 WORKDIR /var/www/html
 
+# Copy everything including pre-built vendor
 COPY . .
-
-# Install dependencies in chunks to avoid OOM
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --no-scripts \
-    --no-plugins
-
-RUN composer dump-autoload --optimize --no-scripts
 
 # Build frontend
 RUN npm ci && npm run build && rm -rf node_modules
