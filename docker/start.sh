@@ -11,12 +11,12 @@ fi
 # Run migrations
 php artisan migrate --force
 
-# Cache config and routes for production
+# Cache for production
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Create storage symlink
+# Storage symlink
 php artisan storage:link || true
 
 # Start PHP-FPM in background

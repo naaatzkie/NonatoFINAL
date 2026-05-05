@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     freetype-dev \
     oniguruma-dev \
     libxml2-dev \
-    mysql-client
+    mysql-client \
+    supervisor
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -28,26 +29,27 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         gd \
         opcache
 
+# Set PHP memory limit high for composer
+RUN echo "memory_limit=-1" > /usr/local/etc/php/conf.d/memory.ini
+
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy composer files first for layer caching
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
-
-# Copy package files and build frontend
-COPY package.json package-lock.json ./
-RUN npm ci
-
+# Copy everything
 COPY . .
 
-# Complete composer install
-RUN composer dump-autoload --optimize
+# Install PHP dependencies
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --prefer-dist \
+    --ignore-platform-reqs
 
-# Build frontend assets
-RUN npm run build && rm -rf node_modules
+# Install Node dependencies and build assets
+RUN npm ci && npm run build && rm -rf node_modules
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
